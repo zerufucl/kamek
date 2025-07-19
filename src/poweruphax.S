@@ -1082,7 +1082,8 @@ StrongboxGiveBattleItem:
 
 .data
 IndexItemsForStockItem:
-.byte 0,1,2,3,5,6,4,7,8
+.byte 0,1,2,3,5,6,4,7
+
 
 SLGWindow: .string "A00_Window"
 SLGBtn0: .string "B00_itemButton"
@@ -1093,7 +1094,6 @@ SLGBtn4: .string "B04_itemButton"
 SLGBtn5: .string "B05_itemButton"
 SLGBtn6: .string "B06_itemButton"
 SLGBtn7: .string "HammerGroup"
-SLGBtn8: .string "B08_itemButton"
 SLButtonBase00: .string "P_buttonBase_00"
 SLButtonBase01: .string "P_buttonBase_01"
 SLButtonBase02: .string "P_buttonBase_02"
@@ -1102,7 +1102,6 @@ SLButtonBase04: .string "P_buttonBase_04"
 SLButtonBase05: .string "P_buttonBase_05"
 SLButtonBase06: .string "P_buttonBase_06"
 SLButtonBase07: .string "P_buttonBase_07"
-SLButtonBase08: .string "P_buttonBase_08"
 SLIcon0: .string "P_iconKinoko_00"
 SLIcon1: .string "P_iconFlower_00"
 SLIcon2: .string "P_iconPro_00"
@@ -1111,7 +1110,6 @@ SLIcon4: .string "P_iconPen_00"
 SLIcon5: .string "P_mameKinoko_00"
 SLIcon6: .string "P_iconStar_00"
 SLIcon7: .string "P_iconHammer_00"
-SLIcon8: .string "P_iconBomb_00"
 SLIconPane0: .string "N_iconKinoko_00"
 SLIconPane1: .string "N_iconFlower_00"
 SLIconPane2: .string "N_iconPro_00"
@@ -1120,7 +1118,6 @@ SLIconPane4: .string "N_iconPen_00"
 SLIconPane5: .string "N_mameKinoko_00"
 SLIconPane6: .string "N_iconStar_00"
 SLIconPane7: .string "N_iconHammer_00"
-SLIconPane8: .string "N_iconBomb_00"
 .align 4
 SILayoutGroupNames:
 .long SLGWindow
