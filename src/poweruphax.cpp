@@ -24,45 +24,46 @@ void UrchinHammer(dEn_c *urchin, ActivePhysics *apThis, ActivePhysics *apOther) 
 
 #include "poweruphax.h"
 
-void SetCullModeForMaterial(m3d::mdl_c* model, int materialID, u32 cullMode);
+void SetCullModeForMaterial(m3d::mdl_c *model, int materialID, u32 cullMode);
 
-dHammerSuitRenderer_c* dHammerSuitRenderer_c::build() {
+
+dHammerSuitRenderer_c *dHammerSuitRenderer_c::build() {
 	return new dHammerSuitRenderer_c;
 }
 
-dHammerSuitRenderer_c::dHammerSuitRenderer_c() {}
-dHammerSuitRenderer_c::~dHammerSuitRenderer_c() {}
+dHammerSuitRenderer_c::dHammerSuitRenderer_c() { }
+dHammerSuitRenderer_c::~dHammerSuitRenderer_c() { }
 
-void dHammerSuitRenderer_c::setup(dPlayerModelHandler_c* handler) {
+void dHammerSuitRenderer_c::setup(dPlayerModelHandler_c *handler) {
 	setup(handler, 0);
 }
 
-void dHammerSuitRenderer_c::setup(dPlayerModelHandler_c* handler, int sceneID) {
+void dHammerSuitRenderer_c::setup(dPlayerModelHandler_c *handler, int sceneID) {
 	victim = (dPlayerModel_c*)handler->mdlClass;
 
 	allocator.link(-1, GameHeaps[0], 0, 0x20);
 
-	// Carga modelo Hammer Suit
-	nw4r::g3d::ResFile hammerRf(getResource("hammerM", "g3d/suit.brres"));
+	nw4r::g3d::ResFile rf(getResource("hammerM", "g3d/suit.brres"));
+
 	if (victim->player_id_2 <= 1) {
-		helmet.setup(hammerRf.GetResMdl((victim->player_id_2 == 0) ? "marioHelmet" : "luigiHelmet"), &allocator, 0, 1, 0);
+		helmet.setup(rf.GetResMdl((victim->player_id_2 == 0) ? "marioHelmet" : "luigiHelmet"), &allocator, 0, 1, 0);
 		SetupTextures_MapObj(&helmet, sceneID);
 	}
-	const char* shellNames[] = { "shell", "shell", "shell", "shell", "shell" };
-	shell.setup(hammerRf.GetResMdl(shellNames[victim->player_id_2]), &allocator, 0, 1, 0);
-	SetupTextures_MapObj(&shell, sceneID);
 
-	// Carga modelo Bomb Suit
-	nw4r::g3d::ResFile bombRf(getResource("bombM", "g3d/bomb.brres"));
-	bombModel.setup(bombRf.GetResMdl("bombModel"), &allocator, 0, 1, 0);
-	SetupTextures_MapObj(&bombModel, sceneID);
+	const char *shellNames[] = {
+		"shell", "shell", "shell", "shell", "shell"
+	};
+	shell.setup(rf.GetResMdl(shellNames[victim->player_id_2]), &allocator, 0, 1, 0);
+	SetupTextures_MapObj(&shell, sceneID);
 
 	allocator.unlink();
 
+
 	victimModel = &victim->models[0].body;
-	nw4r::g3d::ResMdl* playerResMdl =
+	nw4r::g3d::ResMdl *playerResMdl =
 		(nw4r::g3d::ResMdl*)(((u32)victimModel->scnObj) + 0xE8);
 
+	//headNodeID = playerResMdl->GetResNode("player_head").GetID();
 	if (victim->player_id_2 <= 1) {
 		nw4r::g3d::ResNode face_1 = playerResMdl->GetResNode("face_1");
 		headNodeID = face_1.GetID();
@@ -73,40 +74,39 @@ void dHammerSuitRenderer_c::setup(dPlayerModelHandler_c* handler, int sceneID) {
 }
 
 void dHammerSuitRenderer_c::draw() {
-	if (victim->powerup_id == 7) {  // Hammer suit
-		if (victim->player_id_2 <= 1) {
-			SetCullModeForMaterial(&victim->getCurrentModel()->head, 3, GX_CULL_ALL);
+	if (victim->powerup_id != 7)
+		return;
 
-			Mtx headMtx;
-			victimModel->getMatrixForNode(headNodeID, &headMtx);
+	if (victim->player_id_2 <= 1) {
+		// Materials: 2=hair 3=hat; Modes: BACK=visible ALL=invisible
+		SetCullModeForMaterial(&victim->getCurrentModel()->head, 3, GX_CULL_ALL);
 
-			helmet.setDrawMatrix(&headMtx);
-			helmet.setScale(1.0f, 1.0f, 1.0f);
-			helmet.calcWorld(false);
+		Mtx headMtx;
+		victimModel->getMatrixForNode(headNodeID, &headMtx);
 
-			helmet.scheduleForDrawing();
-		}
+		helmet.setDrawMatrix(&headMtx);
+		helmet.setScale(1.0f, 1.0f, 1.0f);
+		helmet.calcWorld(false);
 
-		Mtx rootMtx;
-		victimModel->getMatrixForNode(rootNodeID, &rootMtx);
-
-		shell.setDrawMatrix(&rootMtx);
-		shell.setScale(1.0f, 1.0f, 1.0f);
-		shell.calcWorld(false);
-
-		shell.scheduleForDrawing();
+		helmet.scheduleForDrawing();
 	}
-	else if (victim->powerup_id == 8) {  // Bomb suit
-		Mtx rootMtx;
-		victimModel->getMatrixForNode(rootNodeID, &rootMtx);
 
-		bombModel.setDrawMatrix(&rootMtx);
-		bombModel.setScale(1.0f, 1.0f, 1.0f);
-		bombModel.calcWorld(false);
+	Mtx rootMtx;
+	victimModel->getMatrixForNode(rootNodeID, &rootMtx);
 
-		bombModel.scheduleForDrawing();
-	}
+	shell.setDrawMatrix(&rootMtx);
+	shell.setScale(1.0f, 1.0f, 1.0f);
+	shell.calcWorld(false);
+
+	shell.scheduleForDrawing();
 }
+
+
+
+
+
+
+
 
 // NEW VERSION
 void CrapUpPositions(Vec *out, const Vec *in);
@@ -176,7 +176,6 @@ void dStockItem_c::setScalesOfSomeThings() {
 	for (int i = 0; i < 7; i++)
 		shadow->buttonBases[i]->scale = newButtonBase[i]->scale;
 	shadow->hammerButtonBase->scale = newButtonBase[7]->scale;
-
 }
 
 
